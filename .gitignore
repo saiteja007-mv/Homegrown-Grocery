@@ -1,0 +1,30 @@
+# Configuration files
+config/db.php
+
+# Dependencies
+vendor/
+node_modules/
+
+# IDE files
+.vscode/
+.idea/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.log
+*.tmp
+
+# Environment files
+.env
+.env.local
+
+# Upload directories (except .gitkeep)
+uploads/*
+!uploads/.gitkeep
+
+# Cache and session files
+/cache/
+/sessions/ 
