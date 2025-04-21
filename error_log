@@ -1,0 +1,209 @@
+[28-Nov-2024 17:15:41 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Products' doesn't exist in /home6/nestco/homegrown.nest.co.ke/index.php:89
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/index.php(89): mysqli->prepare('SELECT * FROM P...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/index.php on line 89
+[28-Nov-2024 17:15:57 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Products' doesn't exist in /home6/nestco/homegrown.nest.co.ke/index.php:89
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/index.php(89): mysqli->prepare('SELECT * FROM P...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/index.php on line 89
+[28-Nov-2024 17:16:29 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Users' doesn't exist in /home6/nestco/homegrown.nest.co.ke/login.php:11
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/login.php(11): mysqli->prepare('SELECT user_id,...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/login.php on line 11
+[28-Nov-2024 17:18:46 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Products' doesn't exist in /home6/nestco/homegrown.nest.co.ke/index.php:89
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/index.php(89): mysqli->prepare('SELECT * FROM P...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/index.php on line 89
+[28-Nov-2024 17:18:51 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Products' doesn't exist in /home6/nestco/homegrown.nest.co.ke/index.php:89
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/index.php(89): mysqli->prepare('SELECT * FROM P...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/index.php on line 89
+[28-Nov-2024 17:18:54 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Products' doesn't exist in /home6/nestco/homegrown.nest.co.ke/index.php:89
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/index.php(89): mysqli->prepare('SELECT * FROM P...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/index.php on line 89
+[28-Nov-2024 17:19:24 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Users' doesn't exist in /home6/nestco/homegrown.nest.co.ke/login.php:11
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/login.php(11): mysqli->prepare('SELECT user_id,...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/login.php on line 11
+[28-Nov-2024 17:19:34 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Users' doesn't exist in /home6/nestco/homegrown.nest.co.ke/login.php:11
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/login.php(11): mysqli->prepare('SELECT user_id,...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/login.php on line 11
+[28-Nov-2024 17:20:02 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Users' doesn't exist in /home6/nestco/homegrown.nest.co.ke/signup.php:11
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/signup.php(11): mysqli->prepare('INSERT INTO Use...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/signup.php on line 11
+[28-Nov-2024 17:21:14 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Products' doesn't exist in /home6/nestco/homegrown.nest.co.ke/index.php:89
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/index.php(89): mysqli->prepare('SELECT * FROM P...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/index.php on line 89
+[28-Nov-2024 17:21:14 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Products' doesn't exist in /home6/nestco/homegrown.nest.co.ke/index.php:89
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/index.php(89): mysqli->prepare('SELECT * FROM P...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/index.php on line 89
+[28-Nov-2024 17:21:14 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Products' doesn't exist in /home6/nestco/homegrown.nest.co.ke/index.php:89
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/index.php(89): mysqli->prepare('SELECT * FROM P...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/index.php on line 89
+[28-Nov-2024 17:21:15 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Products' doesn't exist in /home6/nestco/homegrown.nest.co.ke/index.php:89
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/index.php(89): mysqli->prepare('SELECT * FROM P...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/index.php on line 89
+[28-Nov-2024 17:21:16 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Products' doesn't exist in /home6/nestco/homegrown.nest.co.ke/index.php:89
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/index.php(89): mysqli->prepare('SELECT * FROM P...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/index.php on line 89
+[28-Nov-2024 17:21:39 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Products' doesn't exist in /home6/nestco/homegrown.nest.co.ke/index.php:89
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/index.php(89): mysqli->prepare('SELECT * FROM P...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/index.php on line 89
+[28-Nov-2024 17:21:39 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Products' doesn't exist in /home6/nestco/homegrown.nest.co.ke/index.php:89
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/index.php(89): mysqli->prepare('SELECT * FROM P...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/index.php on line 89
+[28-Nov-2024 17:21:49 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Products' doesn't exist in /home6/nestco/homegrown.nest.co.ke/index.php:89
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/index.php(89): mysqli->prepare('SELECT * FROM P...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/index.php on line 89
+[28-Nov-2024 17:21:54 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Products' doesn't exist in /home6/nestco/homegrown.nest.co.ke/index.php:89
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/index.php(89): mysqli->prepare('SELECT * FROM P...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/index.php on line 89
+[28-Nov-2024 17:23:40 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Users' doesn't exist in /home6/nestco/homegrown.nest.co.ke/login.php:11
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/login.php(11): mysqli->prepare('SELECT user_id,...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/login.php on line 11
+[28-Nov-2024 17:23:44 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Users' doesn't exist in /home6/nestco/homegrown.nest.co.ke/login.php:11
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/login.php(11): mysqli->prepare('SELECT user_id,...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/login.php on line 11
+[28-Nov-2024 17:26:44 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Users' doesn't exist in /home6/nestco/homegrown.nest.co.ke/login.php:17
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/login.php(17): mysqli->prepare('SELECT user_id,...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/login.php on line 17
+[28-Nov-2024 17:28:34 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Users' doesn't exist in /home6/nestco/homegrown.nest.co.ke/signup.php:11
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/signup.php(11): mysqli->prepare('INSERT INTO Use...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/signup.php on line 11
+[28-Nov-2024 17:28:39 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Users' doesn't exist in /home6/nestco/homegrown.nest.co.ke/signup.php:11
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/signup.php(11): mysqli->prepare('INSERT INTO Use...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/signup.php on line 11
+[28-Nov-2024 17:29:21 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home6/nestco/homegrown.nest.co.ke/includes/header.php:6) in /home6/nestco/homegrown.nest.co.ke/login.php on line 34
+[28-Nov-2024 17:30:57 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Products' doesn't exist in /home6/nestco/homegrown.nest.co.ke/index.php:89
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/index.php(89): mysqli->prepare('SELECT * FROM P...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/index.php on line 89
+[28-Nov-2024 17:34:31 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.users' doesn't exist in /home6/nestco/homegrown.nest.co.ke/login.php:12
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/login.php(12): mysqli->prepare('SELECT user_id,...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/login.php on line 12
+[28-Nov-2024 17:34:50 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.users' doesn't exist in /home6/nestco/homegrown.nest.co.ke/login.php:12
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/login.php(12): mysqli->prepare('SELECT user_id,...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/login.php on line 12
+[28-Nov-2024 17:35:11 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home6/nestco/homegrown.nest.co.ke/includes/header.php:6) in /home6/nestco/homegrown.nest.co.ke/login.php on line 34
+[28-Nov-2024 17:41:06 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home6/nestco/homegrown.nest.co.ke/includes/header.php:6) in /home6/nestco/homegrown.nest.co.ke/signup.php on line 16
+[28-Nov-2024 18:13:38 UTC] PHP Warning:  Undefined array key "email" in /home6/nestco/homegrown.nest.co.ke/login.php on line 8
+[28-Nov-2024 18:13:38 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home6/nestco/homegrown.nest.co.ke/login.php on line 8
+[28-Nov-2024 18:13:38 UTC] PHP Warning:  Undefined array key "password" in /home6/nestco/homegrown.nest.co.ke/login.php on line 9
+[28-Nov-2024 18:13:38 UTC] PHP Deprecated:  trim(): Passing null to parameter #1 ($string) of type string is deprecated in /home6/nestco/homegrown.nest.co.ke/login.php on line 9
+[28-Nov-2024 18:14:23 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home6/nestco/homegrown.nest.co.ke/includes/header.php:6) in /home6/nestco/homegrown.nest.co.ke/cart.php on line 36
+[28-Nov-2024 18:15:17 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home6/nestco/homegrown.nest.co.ke/includes/header.php:6) in /home6/nestco/homegrown.nest.co.ke/checkout.php on line 63
+[28-Nov-2024 18:15:26 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home6/nestco/homegrown.nest.co.ke/includes/header.php:6) in /home6/nestco/homegrown.nest.co.ke/checkout.php on line 63
+[28-Nov-2024 19:45:49 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home6/nestco/homegrown.nest.co.ke/includes/header.php:6) in /home6/nestco/homegrown.nest.co.ke/cart.php on line 36
+[28-Nov-2024 19:46:51 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home6/nestco/homegrown.nest.co.ke/includes/header.php:6) in /home6/nestco/homegrown.nest.co.ke/cart.php on line 36
+[28-Nov-2024 19:48:13 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home6/nestco/homegrown.nest.co.ke/includes/header.php:6) in /home6/nestco/homegrown.nest.co.ke/cart.php on line 36
+[28-Nov-2024 19:48:35 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home6/nestco/homegrown.nest.co.ke/includes/header.php:6) in /home6/nestco/homegrown.nest.co.ke/cart.php on line 51
+[28-Nov-2024 19:48:44 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home6/nestco/homegrown.nest.co.ke/includes/header.php:6) in /home6/nestco/homegrown.nest.co.ke/cart.php on line 51
+[28-Nov-2024 19:48:59 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home6/nestco/homegrown.nest.co.ke/includes/header.php:6) in /home6/nestco/homegrown.nest.co.ke/cart.php on line 36
+[28-Nov-2024 19:49:07 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home6/nestco/homegrown.nest.co.ke/includes/header.php:6) in /home6/nestco/homegrown.nest.co.ke/cart.php on line 36
+[28-Nov-2024 19:49:20 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home6/nestco/homegrown.nest.co.ke/includes/header.php:6) in /home6/nestco/homegrown.nest.co.ke/cart.php on line 36
+[28-Nov-2024 19:49:29 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home6/nestco/homegrown.nest.co.ke/includes/header.php:6) in /home6/nestco/homegrown.nest.co.ke/cart.php on line 51
+[28-Nov-2024 19:49:34 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home6/nestco/homegrown.nest.co.ke/includes/header.php:6) in /home6/nestco/homegrown.nest.co.ke/cart.php on line 51
+[29-Nov-2024 00:55:59 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home6/nestco/homegrown.nest.co.ke/includes/header.php:6) in /home6/nestco/homegrown.nest.co.ke/cart.php on line 39
+[29-Nov-2024 00:56:55 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home6/nestco/homegrown.nest.co.ke/includes/header.php:6) in /home6/nestco/homegrown.nest.co.ke/cart.php on line 45
+[29-Nov-2024 01:06:59 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home6/nestco/homegrown.nest.co.ke/includes/header.php:6) in /home6/nestco/homegrown.nest.co.ke/checkout.php on line 63
+[29-Nov-2024 01:07:15 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home6/nestco/homegrown.nest.co.ke/includes/header.php:6) in /home6/nestco/homegrown.nest.co.ke/checkout.php on line 92
+[02-Dec-2024 00:29:27 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Notifications' doesn't exist in /home6/nestco/homegrown.nest.co.ke/notification.php:14
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/notification.php(14): mysqli->prepare('SELECT Notifica...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/notification.php on line 14
+[02-Dec-2024 00:29:32 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Notifications' doesn't exist in /home6/nestco/homegrown.nest.co.ke/notification.php:14
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/notification.php(14): mysqli->prepare('SELECT Notifica...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/notification.php on line 14
+[02-Dec-2024 00:29:34 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Notifications' doesn't exist in /home6/nestco/homegrown.nest.co.ke/notification.php:14
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/notification.php(14): mysqli->prepare('SELECT Notifica...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/notification.php on line 14
+[02-Dec-2024 00:35:31 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Notifications' doesn't exist in /home6/nestco/homegrown.nest.co.ke/notification.php:14
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/notification.php(14): mysqli->prepare('SELECT Notifica...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/notification.php on line 14
+[02-Dec-2024 00:35:38 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Notifications' doesn't exist in /home6/nestco/homegrown.nest.co.ke/notification.php:14
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/notification.php(14): mysqli->prepare('SELECT Notifica...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/notification.php on line 14
+[02-Dec-2024 00:39:29 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Notifications' doesn't exist in /home6/nestco/homegrown.nest.co.ke/checkout.php:116
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/checkout.php(116): mysqli->prepare('INSERT INTO Not...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/checkout.php on line 116
+[02-Dec-2024 00:40:43 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Notifications' doesn't exist in /home6/nestco/homegrown.nest.co.ke/checkout.php:116
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/checkout.php(116): mysqli->prepare('INSERT INTO Not...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/checkout.php on line 116
+[02-Dec-2024 00:40:47 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Notifications' doesn't exist in /home6/nestco/homegrown.nest.co.ke/checkout.php:116
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/checkout.php(116): mysqli->prepare('INSERT INTO Not...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/checkout.php on line 116
+[02-Dec-2024 00:44:21 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.notifications' doesn't exist in /home6/nestco/homegrown.nest.co.ke/checkout.php:116
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/checkout.php(116): mysqli->prepare('INSERT INTO not...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/checkout.php on line 116
+[02-Dec-2024 00:48:14 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Notifications' doesn't exist in /home6/nestco/homegrown.nest.co.ke/notification.php:19
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/notification.php(19): mysqli->prepare('SELECT * FROM N...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/notification.php on line 19
+[02-Dec-2024 00:50:28 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'nestco_homegrown.Notifications' doesn't exist in /home6/nestco/homegrown.nest.co.ke/notification.php:19
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/notification.php(19): mysqli->prepare('SELECT * FROM N...')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/notification.php on line 19

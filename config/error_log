@@ -1,0 +1,10 @@
+[28-Nov-2024 17:14:15 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Access denied for user 'root'@'localhost' in /home6/nestco/homegrown.nest.co.ke/config/db.php:7
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/config/db.php(7): mysqli->__construct('localhost', 'root', Object(SensitiveParameterValue), 'HomeGrown')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/config/db.php on line 7
+[28-Nov-2024 17:15:00 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Access denied for user 'root'@'localhost' in /home6/nestco/homegrown.nest.co.ke/config/db.php:7
+Stack trace:
+#0 /home6/nestco/homegrown.nest.co.ke/config/db.php(7): mysqli->__construct('localhost', 'root', Object(SensitiveParameterValue), 'HomeGrown')
+#1 {main}
+  thrown in /home6/nestco/homegrown.nest.co.ke/config/db.php on line 7

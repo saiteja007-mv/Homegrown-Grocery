@@ -1,0 +1,53 @@
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.bg-light {
+    background-color: #f8f9fa !important;
+    border-right: 1px solid #e9ecef;
+}
+
+.nav-link {
+    font-size: 16px;
+    padding: 10px 15px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.nav-link:hover {
+    background-color: #59b374;
+}
+
+
+.product-image {
+    width: 100%; /* Ensure the image takes the full width of its container */
+    height: 150px; /* Set a fixed height */
+    object-fit: cover; /* Ensures the image fills the container while maintaining aspect ratio */
+    border-radius: 8px; /* Optional: Adds rounded corners to the images */
+}
+
+.badge {
+    font-size: 12px;
+    padding: 2px 4px;
+    border-radius: 50%;
+    position: absolute;
+    top: 20px;
+    right: 80px;
+}
+
+
+.jumbotron-bg {
+    background-image: url('../images/we_Deliver.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 100px 20px;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+}
