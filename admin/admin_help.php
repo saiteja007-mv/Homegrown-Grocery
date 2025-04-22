@@ -8,6 +8,13 @@ restrict_to_admin();
 
 include '../includes/header_admin.php';
 
+// Check if we need to refresh the page to show updated data
+if (isset($_SESSION['refresh_help_tickets']) && $_SESSION['refresh_help_tickets'] === true) {
+    unset($_SESSION['refresh_help_tickets']);
+    header("Location: admin_help.php");
+    exit();
+}
+
 // Handle ticket response
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ticket_id'])) {
     $ticket_id = $_POST['ticket_id'];
@@ -27,32 +34,121 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ticket_id'])) {
 
         // Handle order details updates
         if (isset($_POST['order_details']) && is_array($_POST['order_details'])) {
-            $new_total = 0;
+            // Initialize total with higher precision using string-based calculation
+            $new_total = "0.00";
+            
+            // Debug log for tracking
+            error_log("Starting order update process for order ID: $order_id");
             
             foreach ($_POST['order_details'] as $detail_id => $updates) {
-                if (isset($updates['quantity']) && isset($updates['price'])) {
-                    $quantity = intval($updates['quantity']);
-                    $price = floatval($updates['price']);
-                    $item_total = $quantity * $price;
-                    $new_total += $item_total;
-
+                if (isset($updates['quantity'])) {
+                    $detail_id = intval($detail_id);
+                    $quantity = max(1, intval($updates['quantity'])); // Ensure quantity is at least 1
+                    
+                    // Get the current order detail information
+                    $stmt = $conn->prepare("
+                        SELECT product_name, price as current_price
+                        FROM OrderDetails 
+                        WHERE order_detail_id = ?
+                    ");
+                    $stmt->bind_param("i", $detail_id);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    
+                    $product_name = '';
+                    $current_price = 0.00;
+                    
+                    if ($row = $result->fetch_assoc()) {
+                        $product_name = $row['product_name'];
+                        $current_price = floatval($row['current_price']);
+                        error_log("Retrieved product: {$row['product_name']}, Current price: {$row['current_price']}");
+                    } else {
+                        error_log("Warning: Order detail not found for ID: $detail_id");
+                        continue;
+                    }
+                    
+                    // Determine the price to use
+                    $price = $current_price; // Default to current price
+                    
+                    // Use new price if provided in the form
+                    if (isset($updates['price']) && !empty($updates['price']) && is_numeric($updates['price'])) {
+                        $price = floatval($updates['price']);
+                    }
+                    
+                    // Format price with proper decimal precision
+                    $price = number_format($price, 2, '.', '');
+                    
+                    // Calculate item total
+                    $item_total = number_format($quantity * (float)$price, 2, '.', '');
+                    
+                    error_log("Processing order detail ID: $detail_id, Product: $product_name, Quantity: $quantity, Price: $price, Total: $item_total");
+                    
+                    // Add to running total
+                    $new_total = number_format((float)$new_total + (float)$item_total, 2, '.', '');
+                    
                     // Update order detail
                     $stmt = $conn->prepare("
                         UPDATE OrderDetails 
                         SET quantity = ?, 
-                            price = ?, 
-                            total = ? 
+                            price = CAST(? AS DECIMAL(10,2)), 
+                            total = CAST(? AS DECIMAL(10,2))
                         WHERE order_detail_id = ? AND order_id = ?
                     ");
-                    $stmt->bind_param("idiii", $quantity, $price, $item_total, $detail_id, $order_id);
-                    $stmt->execute();
+                    
+                    if ($stmt === false) {
+                        throw new Exception("Error preparing update statement: " . $conn->error);
+                    }
+                    
+                    $stmt->bind_param("issii", $quantity, $price, $item_total, $detail_id, $order_id);
+                    
+                    if (!$stmt->execute()) {
+                        error_log("Error updating order detail: " . $stmt->error);
+                        throw new Exception("Error updating order detail: " . $stmt->error);
+                    }
                 }
             }
+            
+            // Ensure proper decimal format for the final total
+            $new_total = number_format((float)$new_total, 2, '.', '');
+            error_log("Final calculated order total: $new_total for order ID: $order_id");
 
-            // Update order total
-            $stmt = $conn->prepare("UPDATE Orders SET total_amount = ? WHERE order_id = ?");
-            $stmt->bind_param("di", $new_total, $order_id);
-            $stmt->execute();
+            // Debug total calculation
+            error_log("New Order Total: " . $new_total);
+            // Validate the total is a proper decimal value
+            if (!is_numeric($new_total)) {
+                throw new Exception("Invalid total amount calculated: $new_total");
+            }
+            
+            // Update order total with correct decimal handling
+            $stmt = $conn->prepare("UPDATE Orders SET total_amount = CAST(? AS DECIMAL(10,2)) WHERE order_id = ?");
+            $stmt->bind_param("si", $new_total, $order_id);
+            
+            if (!$stmt->execute()) {
+                error_log("Error updating order total: " . $stmt->error);
+                throw new Exception("Error updating order total: " . $stmt->error);
+            }
+            
+            // Verify the update was successful
+            $verify_stmt = $conn->prepare("SELECT total_amount FROM Orders WHERE order_id = ?");
+            $verify_stmt->bind_param("i", $order_id);
+            $verify_stmt->execute();
+            $result = $verify_stmt->get_result();
+            if ($row = $result->fetch_assoc()) {
+                $stored_total = $row['total_amount'];
+                error_log("Verified stored total in database: $stored_total for order ID: $order_id");
+                
+                // Check if the stored value matches what we calculated
+                if (abs((float)$stored_total - (float)$new_total) > 0.01) {
+                    error_log("WARNING: Stored total ($stored_total) differs from calculated total ($new_total)");
+                }
+            }
+            // Execute statement was already performed above - removing duplicate execution
+            
+            // Store the calculated total in session for verification
+            $_SESSION['debug_new_total'] = $new_total;
+            
+            // Force refresh the page to show updated data
+            $_SESSION['refresh_help_tickets'] = true;
         }
 
         // Handle shipping details updates if requested
@@ -90,9 +186,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ticket_id'])) {
         $conn->commit();
         $_SESSION['success'] = "Ticket updated successfully.";
         
+        // Set refresh flag to ensure updated data is shown
+        $_SESSION['refresh_help_tickets'] = true;
+        
         // Redirect to payment page if order total was updated
         if (isset($new_total) && $new_total > 0) {
-            header("Location: ../payment.php?order_id=" . $order_id . "&amount=" . $new_total);
+            // Ensure amount parameter has correct decimal precision
+            header("Location: ../payment.php?order_id=" . $order_id . "&amount=" . number_format($new_total, 2, '.', ''));
             exit();
         }
         
@@ -203,113 +303,117 @@ $tickets = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                         <!-- Order Details Section -->
                         <h6>Order Items:</h6>
                         <?php
-                        $stmt = $conn->prepare("SELECT * FROM OrderDetails WHERE order_id = ?");
+                        // Fetch the most recent order details after any updates
+                        $stmt = $conn->prepare("
+                            SELECT od.*, o.total_amount as current_total, o.order_date
+                            FROM OrderDetails od
+                            JOIN Orders o ON od.order_id = o.order_id
+                            WHERE od.order_id = ?
+                        ");
                         $stmt->bind_param("i", $ticket['order_id']);
                         $stmt->execute();
                         $order_details = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                         ?>
-                        <div class="table-responsive mb-3">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Product</th>
-                                        <th>Current Price</th>
-                                        <th>Current Quantity</th>
-                                        <th>Current Total</th>
-                                        <th>New Price</th>
-                                        <th>New Quantity</th>
-                                        <th>New Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($order_details as $detail): ?>
-                                        <tr>
-                                            <td><?php echo htmlspecialchars($detail['product_name']); ?></td>
-                                            <td>$<?php echo number_format($detail['price'], 2); ?></td>
-                                            <td><?php echo $detail['quantity']; ?></td>
-                                            <td>$<?php echo number_format($detail['total'], 2); ?></td>
-                                            <td>
-                                                <input type="number" step="0.01" min="0" 
-                                                       name="order_details[<?php echo $detail['order_detail_id']; ?>][price]" 
-                                                       class="form-control form-control-sm price-input" 
-                                                       data-order-id="<?php echo $ticket['order_id']; ?>"
-                                                       value="<?php echo $detail['price']; ?>">
-                                            </td>
-                                            <td>
-                                                <input type="number" min="1" 
-                                                       name="order_details[<?php echo $detail['order_detail_id']; ?>][quantity]" 
-                                                       class="form-control form-control-sm quantity-input"
-                                                       data-order-id="<?php echo $ticket['order_id']; ?>"
-                                                       value="<?php echo $detail['quantity']; ?>">
-                                            </td>
-                                            <td class="new-total">$0.00</td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="6" class="text-end"><strong>New Order Total:</strong></td>
-                                        <td id="new-order-total-<?php echo $ticket['order_id']; ?>" class="new-total">$0.00</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-
-                        <!-- Shipping Details Section -->
-                        <h6>Shipping Details:</h6>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <div class="form-check mb-2">
-                                    <input type="checkbox" class="form-check-input" id="update_shipping<?php echo $ticket['ticket_id']; ?>" name="update_shipping" value="1">
-                                    <label class="form-check-label" for="update_shipping<?php echo $ticket['ticket_id']; ?>">Update Shipping Details</label>
-                                </div>
-                                <div class="shipping-fields" style="display: none;">
-                                    <div class="mb-2">
-                                        <label class="form-label">Name</label>
-                                        <input type="text" name="shipping_name" class="form-control" value="<?php echo htmlspecialchars($ticket['shipping_name'] ?? ''); ?>">
-                                    </div>
-                                    <div class="mb-2">
-                                        <label class="form-label">Phone</label>
-                                        <input type="text" name="shipping_phone" class="form-control" value="<?php echo htmlspecialchars($ticket['shipping_phone'] ?? ''); ?>">
-                                    </div>
-                                    <div class="mb-2">
-                                        <label class="form-label">Address</label>
-                                        <textarea name="shipping_address" class="form-control" rows="2"><?php echo htmlspecialchars($ticket['shipping_address'] ?? ''); ?></textarea>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-2">
-                                            <label class="form-label">City</label>
-                                            <input type="text" name="shipping_city" class="form-control" value="<?php echo htmlspecialchars($ticket['shipping_city'] ?? ''); ?>">
-                                        </div>
-                                        <div class="col-md-6 mb-2">
-                                            <label class="form-label">State</label>
-                                            <input type="text" name="shipping_state" class="form-control" value="<?php echo htmlspecialchars($ticket['shipping_state'] ?? ''); ?>">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6 mb-2">
-                                            <label class="form-label">Postal Code</label>
-                                            <input type="text" name="shipping_postal_code" class="form-control" value="<?php echo htmlspecialchars($ticket['shipping_postal_code'] ?? ''); ?>">
-                                        </div>
-                                        <div class="col-md-6 mb-2">
-                                            <label class="form-label">Country</label>
-                                            <input type="text" name="shipping_country" class="form-control" value="<?php echo htmlspecialchars($ticket['shipping_country'] ?? ''); ?>">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                         <form method="POST" class="mt-3">
                             <input type="hidden" name="ticket_id" value="<?php echo $ticket['ticket_id']; ?>">
                             <input type="hidden" name="order_id" value="<?php echo $ticket['order_id']; ?>">
                             <input type="hidden" name="user_id" value="<?php echo $ticket['user_id']; ?>">
                             
+                            <div class="table-responsive mb-3">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Current Price</th>
+                                            <th>Current Quantity</th>
+                                            <th>Current Total</th>
+                                            <th>New Price</th>
+                                            <th>New Quantity</th>
+                                            <th>New Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($order_details as $detail): ?>
+                                            <tr data-order-id="<?php echo $ticket['order_id']; ?>">
+                                                <td><?php echo htmlspecialchars($detail['product_name']); ?></td>
+                                                <td>$<?php echo number_format($detail['price'], 2); ?></td>
+                                                <td><?php echo $detail['quantity']; ?></td>
+                                                <td>$<?php echo number_format($detail['total'], 2); ?></td>
+                                                <td>
+                                                    <input type="number" step="0.01" min="0" 
+                                                           name="order_details[<?php echo $detail['order_detail_id']; ?>][price]" 
+                                                           class="form-control form-control-sm price-input" 
+                                                           value="<?php echo $detail['price']; ?>">
+                                                </td>
+                                                <td>
+                                                    <input type="number" min="1" 
+                                                           name="order_details[<?php echo $detail['order_detail_id']; ?>][quantity]" 
+                                                           class="form-control form-control-sm quantity-input"
+                                                           value="<?php echo $detail['quantity']; ?>">
+                                                </td>
+                                                <td class="new-total"></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="6" class="text-end"><strong>New Order Total:</strong></td>
+                                            <td id="new-order-total-<?php echo $ticket['order_id']; ?>" class="new-total"></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                            <!-- Shipping Details Section -->
+                            <h6>Shipping Details:</h6>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-check mb-2">
+                                        <input type="checkbox" class="form-check-input" id="update_shipping<?php echo $ticket['ticket_id']; ?>" name="update_shipping" value="1">
+                                        <label class="form-check-label" for="update_shipping<?php echo $ticket['ticket_id']; ?>">Update Shipping Details</label>
+                                    </div>
+                                    <div class="shipping-fields" style="display: none;">
+                                        <div class="mb-2">
+                                            <label class="form-label">Name</label>
+                                            <input type="text" name="shipping_name" class="form-control" value="<?php echo htmlspecialchars($ticket['shipping_name'] ?? ''); ?>">
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label">Phone</label>
+                                            <input type="text" name="shipping_phone" class="form-control" value="<?php echo htmlspecialchars($ticket['shipping_phone'] ?? ''); ?>">
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label">Address</label>
+                                            <textarea name="shipping_address" class="form-control" rows="2"><?php echo htmlspecialchars($ticket['shipping_address'] ?? ''); ?></textarea>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-2">
+                                                <label class="form-label">City</label>
+                                                <input type="text" name="shipping_city" class="form-control" value="<?php echo htmlspecialchars($ticket['shipping_city'] ?? ''); ?>">
+                                            </div>
+                                            <div class="col-md-6 mb-2">
+                                                <label class="form-label">State</label>
+                                                <input type="text" name="shipping_state" class="form-control" value="<?php echo htmlspecialchars($ticket['shipping_state'] ?? ''); ?>">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-2">
+                                                <label class="form-label">Postal Code</label>
+                                                <input type="text" name="shipping_postal_code" class="form-control" value="<?php echo htmlspecialchars($ticket['shipping_postal_code'] ?? ''); ?>">
+                                            </div>
+                                            <div class="col-md-6 mb-2">
+                                                <label class="form-label">Country</label>
+                                                <input type="text" name="shipping_country" class="form-control" value="<?php echo htmlspecialchars($ticket['shipping_country'] ?? ''); ?>">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="status<?php echo $ticket['ticket_id']; ?>" class="form-label">Update Status</label>
-                                        <select name="status" id="status<?php echo $ticket['ticket_id']; ?>" class="form-select">
+                                        <select name="status" id="status<?php echo $ticket['ticket_id']; ?>" class="form-select" required>
                                             <option value="open" <?php echo $ticket['status'] === 'open' ? 'selected' : ''; ?>>Open</option>
                                             <option value="in_progress" <?php echo $ticket['status'] === 'in_progress' ? 'selected' : ''; ?>>In Progress</option>
                                             <option value="resolved" <?php echo $ticket['status'] === 'resolved' ? 'selected' : ''; ?>>Resolved</option>
@@ -337,52 +441,120 @@ $tickets = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                         </form>
 
                         <script>
-                            document.getElementById('update_shipping<?php echo $ticket['ticket_id']; ?>').addEventListener('change', function() {
-                                const shippingFields = this.closest('.col-md-6').querySelector('.shipping-fields');
-                                shippingFields.style.display = this.checked ? 'block' : 'none';
-                            });
+                            // Wait for DOM to be fully loaded
+                            document.addEventListener('DOMContentLoaded', function() {
+                                // Handle shipping checkbox
+                                const shippingCheckbox = document.getElementById('update_shipping<?php echo $ticket['ticket_id']; ?>');
+                                if (shippingCheckbox) {
+                                    shippingCheckbox.addEventListener('change', function() {
+                                        const shippingFields = this.closest('.col-md-6').querySelector('.shipping-fields');
+                                        shippingFields.style.display = this.checked ? 'block' : 'none';
+                                    });
+                                }
 
-                            // Function to calculate new total for a row
-                            function calculateRowTotal(row) {
-                                const price = parseFloat(row.querySelector('.price-input').value) || 0;
-                                const quantity = parseInt(row.querySelector('.quantity-input').value) || 0;
-                                const newTotal = price * quantity;
-                                row.querySelector('.new-total').textContent = '$' + newTotal.toFixed(2);
-                                return newTotal;
-                            }
+                                // Format currency with 2 decimal places
+                                function formatCurrency(amount) {
+                                    return '$' + parseFloat(amount).toFixed(2);
+                                }
 
-                            // Function to update order total
-                            function updateOrderTotal(orderId) {
-                                const rows = document.querySelectorAll(`tr[data-order-id="${orderId}"]`);
-                                let total = 0;
-                                rows.forEach(row => {
-                                    total += calculateRowTotal(row);
-                                });
-                                document.getElementById(`new-order-total-${orderId}`).textContent = '$' + total.toFixed(2);
-                                document.getElementById(`new_total${orderId}`).value = total.toFixed(2);
-                            }
+                                // Parse currency string to float
+                                function parseCurrency(value) {
+                                    if (typeof value === 'string') {
+                                        return parseFloat(value.replace(/[$,]/g, '')) || 0;
+                                    }
+                                    return parseFloat(value) || 0;
+                                }
 
-                            // Add event listeners for price and quantity inputs
-                            document.querySelectorAll('.price-input, .quantity-input').forEach(input => {
-                                input.addEventListener('input', function() {
-                                    const orderId = this.dataset.orderId;
-                                    const row = this.closest('tr');
-                                    row.dataset.orderId = orderId;
-                                    calculateRowTotal(row);
-                                    updateOrderTotal(orderId);
-                                });
-                            });
+                                // Calculate total for a single row
+                                function calculateRowTotal(row) {
+                                    const priceInput = row.querySelector('.price-input');
+                                    const quantityInput = row.querySelector('.quantity-input');
+                                    const newTotalCell = row.querySelector('.new-total');
 
-                            // Initialize totals on page load
-                            document.querySelectorAll('.price-input').forEach(input => {
-                                const orderId = input.dataset.orderId;
-                                const row = input.closest('tr');
-                                row.dataset.orderId = orderId;
-                                calculateRowTotal(row);
-                                updateOrderTotal(orderId);
+                                    if (!priceInput || !quantityInput || !newTotalCell) return 0;
+
+                                    const price = parseCurrency(priceInput.value);
+                                    const quantity = parseInt(quantityInput.value) || 1;
+                                    const total = price * quantity;
+
+                                    newTotalCell.textContent = formatCurrency(total);
+                                    return total;
+                                }
+
+                                // Update the entire order total
+                                function updateOrderTotal(orderId) {
+                                    const rows = document.querySelectorAll(`tr[data-order-id="${orderId}"]`);
+                                    let orderTotal = 0;
+
+                                    rows.forEach(row => {
+                                        orderTotal += calculateRowTotal(row);
+                                    });
+
+                                    // Update the total in the table footer
+                                    const totalCell = document.getElementById(`new-order-total-${orderId}`);
+                                    if (totalCell) {
+                                        totalCell.textContent = formatCurrency(orderTotal);
+                                    }
+
+                                    // Update the hidden input field
+                                    const totalInput = document.getElementById(`new_total${orderId}`);
+                                    if (totalInput) {
+                                        totalInput.value = orderTotal.toFixed(2);
+                                    }
+                                }
+
+                                // Initialize all rows in the table
+                                function initializeTable() {
+                                    const rows = document.querySelectorAll('tr[data-order-id]');
+                                    const processedOrders = new Set();
+
+                                    rows.forEach(row => {
+                                        const orderId = row.dataset.orderId;
+                                        const priceInput = row.querySelector('.price-input');
+                                        const quantityInput = row.querySelector('.quantity-input');
+                                        const currentPriceCell = row.cells[1]; // Current Price column
+
+                                        // Set initial price if empty
+                                        if (priceInput && currentPriceCell) {
+                                            const currentPrice = parseCurrency(currentPriceCell.textContent);
+                                            if (!priceInput.value) {
+                                                priceInput.value = currentPrice.toFixed(2);
+                                            }
+                                        }
+
+                                        // Add event listeners for real-time updates
+                                        if (priceInput) {
+                                            priceInput.addEventListener('input', () => {
+                                                calculateRowTotal(row);
+                                                updateOrderTotal(orderId);
+                                            });
+                                        }
+
+                                        if (quantityInput) {
+                                            quantityInput.addEventListener('input', () => {
+                                                calculateRowTotal(row);
+                                                updateOrderTotal(orderId);
+                                            });
+                                        }
+
+                                        // Calculate initial totals only once per order
+                                        if (!processedOrders.has(orderId)) {
+                                            processedOrders.add(orderId);
+                                            updateOrderTotal(orderId);
+                                        }
+                                    });
+                                }
+
+                                // Initialize the table
+                                initializeTable();
                             });
                         </script>
+                    <!-- Debug information to help troubleshoot calculations -->
+                    <?php if (isset($_SESSION['debug_new_total'])): ?>
+                    <div class="mt-3 p-2 bg-light border small">
+                        <p class="mb-1"><strong>Debug Info:</strong> Last calculated total: $<?php echo $_SESSION['debug_new_total']; unset($_SESSION['debug_new_total']); ?></p>
                     </div>
+                    <?php endif; ?>
                 </div>
             </div>
         <?php endforeach; ?>

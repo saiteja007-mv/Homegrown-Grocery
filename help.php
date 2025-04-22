@@ -56,6 +56,13 @@ $stmt->execute();
 $tickets = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
 include 'includes/header.php';
+
+// Check if we need to refresh the page to show updated data
+if (isset($_SESSION['refresh_help_tickets']) && $_SESSION['refresh_help_tickets'] === true) {
+    unset($_SESSION['refresh_help_tickets']);
+    header("Location: help.php");
+    exit();
+}
 ?>
 
 <div class="container mt-4">
@@ -158,48 +165,78 @@ include 'includes/header.php';
                                                 <hr>
                                                 <h6>Order Details:</h6>
                                                 <?php
-                                                // Fetch current order details
-                                                $stmt = $conn->prepare("
-                                                    SELECT od.*, o.total_amount as current_total, o.order_date
+                                                // Fetch current order details with the most recent data
+                                                $query = "
+                                                    SELECT 
+                                                        od.order_detail_id,
+                                                        od.product_name,
+                                                        od.quantity,
+                                                        od.price,
+                                                        od.total,
+                                                        o.total_amount as current_total,
+                                                        o.order_date
                                                     FROM OrderDetails od
                                                     JOIN Orders o ON od.order_id = o.order_id
                                                     WHERE od.order_id = ?
-                                                ");
-                                                $stmt->bind_param("i", $ticket['order_id']);
-                                                $stmt->execute();
-                                                $order_details = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+                                                    ORDER BY od.order_detail_id
+                                                ";
+                                                
+                                                $stmt = $conn->prepare($query);
+                                                if ($stmt === false) {
+                                                    // Log the error for debugging
+                                                    error_log("Query preparation failed: " . $conn->error);
+                                                    echo '<div class="alert alert-danger">Error loading order details. Please try again later.</div>';
+                                                } else {
+                                                    $stmt->bind_param("i", $ticket['order_id']);
+                                                    if ($stmt->execute()) {
+                                                        $order_details = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+                                                        // Calculate the actual total from order details
+                                                        $actual_total = 0;
+                                                        foreach ($order_details as $detail) {
+                                                            $actual_total += $detail['total'];
+                                                        }
+                                                        ?>
+                                                        <div class="table-responsive">
+                                                            <table class="table table-bordered table-sm">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Product</th>
+                                                                        <th>Price</th>
+                                                                        <th>Quantity</th>
+                                                                        <th>Total</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <?php foreach ($order_details as $detail): ?>
+                                                                        <tr>
+                                                                            <td><?php echo htmlspecialchars($detail['product_name']); ?></td>
+                                                                            <td>$<?php echo number_format($detail['price'], 2); ?></td>
+                                                                            <td><?php echo $detail['quantity']; ?></td>
+                                                                            <td>$<?php echo number_format($detail['total'], 2); ?></td>
+                                                                        </tr>
+                                                                    <?php endforeach; ?>
+                                                                </tbody>
+                                                                <tfoot>
+                                                                    <tr>
+                                                                        <td colspan="3" class="text-end"><strong>Order Total:</strong></td>
+                                                                        <td><strong>$<?php echo number_format($actual_total, 2); ?></strong></td>
+                                                                    </tr>
+                                                                </tfoot>
+                                                            </table>
+                                                        </div>
+                                                        <small class="text-muted">
+                                                            Last updated: <?php echo date('M j, Y, g:i a', strtotime($ticket['updated_at'])); ?>
+                                                        </small>
+                                                        <?php
+                                                    } else {
+                                                        // Log the error for debugging
+                                                        error_log("Query execution failed: " . $stmt->error);
+                                                        echo '<div class="alert alert-danger">Error loading order details. Please try again later.</div>';
+                                                    }
+                                                    $stmt->close();
+                                                }
                                                 ?>
-                                                <div class="table-responsive">
-                                                    <table class="table table-bordered table-sm">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Product</th>
-                                                                <th>Price</th>
-                                                                <th>Quantity</th>
-                                                                <th>Total</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <?php foreach ($order_details as $detail): ?>
-                                                                <tr>
-                                                                    <td><?php echo htmlspecialchars($detail['product_name']); ?></td>
-                                                                    <td>$<?php echo number_format($detail['price'], 2); ?></td>
-                                                                    <td><?php echo $detail['quantity']; ?></td>
-                                                                    <td>$<?php echo number_format($detail['total'], 2); ?></td>
-                                                                </tr>
-                                                            <?php endforeach; ?>
-                                                        </tbody>
-                                                        <tfoot>
-                                                            <tr>
-                                                                <td colspan="3" class="text-end"><strong>Order Total:</strong></td>
-                                                                <td><strong>$<?php echo number_format($order_details[0]['current_total'], 2); ?></strong></td>
-                                                            </tr>
-                                                        </tfoot>
-                                                    </table>
-                                                </div>
-                                                <small class="text-muted">
-                                                    Last updated: <?php echo date('M j, Y, g:i a', strtotime($order_details[0]['order_date'])); ?>
-                                                </small>
                                             <?php endif; ?>
                                             
                                             <small class="text-muted">
