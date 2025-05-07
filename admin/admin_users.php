@@ -11,14 +11,70 @@ include '../includes/header_admin.php';
 // Handle user deletion
 if (isset($_GET['delete'])) {
     $user_id = intval($_GET['delete']);
-    $stmt = $conn->prepare("DELETE FROM Users WHERE user_id = ?");
-    $stmt->bind_param("i", $user_id);
-    if ($stmt->execute()) {
-        $_SESSION['success'] = "User deleted successfully.";
+    
+    // Start transaction
+    $conn->begin_transaction();
+    
+    try {
+        // Check if user exists
+        $check_user = $conn->prepare("SELECT user_id FROM Users WHERE user_id = ?");
+        $check_user->bind_param("i", $user_id);
+        $check_user->execute();
+        $user_result = $check_user->get_result();
+        
+        if ($user_result->num_rows === 0) {
+            throw new Exception("User not found");
+        }
+
+        // Delete from HelpTickets first since it references Orders
+        $stmt = $conn->prepare("DELETE FROM HelpTickets WHERE user_id = ? OR order_id IN (SELECT order_id FROM Orders WHERE user_id = ?)");
+        $stmt->bind_param("ii", $user_id, $user_id);
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to delete from HelpTickets: " . $stmt->error);
+        }
+
+        // Delete from OrderDetails next
+        $stmt = $conn->prepare("DELETE od FROM OrderDetails od 
+                               INNER JOIN Orders o ON od.order_id = o.order_id 
+                               WHERE o.user_id = ?");
+        $stmt->bind_param("i", $user_id);
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to delete from OrderDetails: " . $stmt->error);
+        }
+
+        // Delete from Orders since dependencies are cleared
+        $stmt = $conn->prepare("DELETE FROM Orders WHERE user_id = ?");
+        $stmt->bind_param("i", $user_id);
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to delete from Orders: " . $stmt->error);
+        }
+
+        // Delete from remaining tables
+        $tables = ['Cart', 'Shipping'];
+        foreach ($tables as $table) {
+            $stmt = $conn->prepare("DELETE FROM $table WHERE user_id = ?");
+            $stmt->bind_param("i", $user_id);
+            if (!$stmt->execute()) {
+                throw new Exception("Failed to delete from $table table: " . $stmt->error);
+            }
+        }
+        
+        // Finally delete the user
+        $stmt = $conn->prepare("DELETE FROM Users WHERE user_id = ?");
+        $stmt->bind_param("i", $user_id);
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to delete user: " . $stmt->error);
+        }
+
+        $conn->commit();
+        $_SESSION['success'] = "User and all related records deleted successfully.";
         header("Location: admin_users.php");
         exit;
-    } else {
-        $_SESSION['error'] = "Failed to delete user.";
+    } catch (Exception $e) {
+        $conn->rollback();
+        $_SESSION['error'] = "Error during user deletion: " . $e->getMessage();
+        header("Location: admin_users.php");
+        exit;
     }
 }
 

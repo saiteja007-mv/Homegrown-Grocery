@@ -28,3 +28,4 @@ uploads/*
 # Cache and session files
 /cache/
 /sessions/ 
+.vercel
